@@ -1,0 +1,53 @@
+services:
+  discordipminer:
+    image: ghcr.io/eewbot/discord-ip-miner:v0.1.0
+    hostname: discordipminer
+    container_name: discordipminer__discordipminer
+    restart: unless-stopped
+
+    environment:
+      LISTEN: 0.0.0.0:3000
+      CLIENT_IP_SOURCE: CfConnectingIp
+      WELLKNOWN_IPS: ${WELLKNOWN_IPS}
+      MEASUREMENT_INTERVAL: ${MEASUREMENT_INTERVAL}
+      METRICS_INTERVAL: ${METRICS_INTERVAL}
+      REPORT_IN: ${REPORT_IN}
+      LURE_IN: ${LURE_IN}
+      OGP_ENDPOINT: ${OGP_ENDPOINT}
+      REPORT_CONTENT: ${REPORT_CONTENT}
+      HMAC_SECRET: ${HMAC_SECRET}
+
+    command: /usr/bin/discord-ip-miner
+
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+    networks:
+      - default
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.5.0
+    hostname: cloudflared
+    container_name: discordipminer__cloudflared
+
+    restart: unless-stopped
+
+    environment:
+      TUNNEL_LOGFILE: /dev/stdout
+
+    command: tunnel run --token ${TUNNEL_TOKEN}
+    user: root
+
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+    networks:
+      - default
+
+networks:
+  default:
+    name: discordipminer__default
