@@ -8,16 +8,25 @@ services:
     environment:
       LISTEN: 0.0.0.0:3000
       CLIENT_IP_SOURCE: CfConnectingIp
+      LURE_INS: /etc/lure_ins
+      SENDER_IPS: ${SENDER_IPS}
+      MULTIPLIER: ${MULTIPLIER}
       WELLKNOWN_IPS: ${WELLKNOWN_IPS}
       MEASUREMENT_INTERVAL: ${MEASUREMENT_INTERVAL}
+      TIMEOUT: ${TIMEOUT}
       METRICS_INTERVAL: ${METRICS_INTERVAL}
       REPORT_IN: ${REPORT_IN}
-      LURE_IN: ${LURE_IN}
       OGP_ENDPOINT: ${OGP_ENDPOINT}
       REPORT_CONTENT: ${REPORT_CONTENT}
       HMAC_SECRET: ${HMAC_SECRET}
 
     command: /usr/bin/discord-ip-miner
+
+    volumes:
+      - type: bind
+        source: ./lure_ins
+        target: /etc/lure_ins
+        read_only: true
 
     deploy:
       resources:
